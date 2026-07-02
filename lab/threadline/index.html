@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Threadline · a company, compiled</title>
+<style>
+  :root{
+    --ink:#0a0b0d; --ink2:#101216; --paper:#f6f6f3; --paper70:rgba(246,246,243,.72);
+    --mute:#8b908b; --signal:#c6ff48; --signal-dim:rgba(198,255,72,.16); --line:#23271f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--ink);color:var(--paper);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .meta{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+  a{color:inherit}
+  button{font:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:8px}
+  .skip{position:absolute;left:-999px}
+  .skip:focus{left:16px;top:16px;z-index:120;background:var(--signal);color:var(--ink);padding:.5rem 1rem;border-radius:999px;font-weight:700}
+
+  /* animated thread background */
+  #bg{position:fixed;inset:0;z-index:0;opacity:.55}
+  .thread{fill:none;stroke:var(--signal);stroke-width:1;opacity:.14;stroke-dasharray:6 10;animation:drift 24s linear infinite}
+  .thread.b{stroke:#5a7bff;opacity:.10;animation-duration:32s;animation-direction:reverse}
+  @keyframes drift{to{stroke-dashoffset:-320}}
+  #glow{position:fixed;left:50%;top:42%;width:60vmax;height:60vmax;transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(198,255,72,.10), rgba(198,255,72,0) 60%);z-index:0;pointer-events:none;filter:blur(20px)}
+
+  main{position:relative;z-index:2;height:100%;outline:none}
+
+  /* ── ACT 1 — reveal ── */
+  #reveal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:var(--ink);transition:opacity .6s ease}
+  #reveal.gone{opacity:0;pointer-events:none}
+  .rv{width:min(560px,92vw);text-align:center;padding:0 20px}
+  .rv .log{min-height:120px;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center}
+  .rv .tick{opacity:0;transform:translateY(6px);transition:all .4s ease;font-size:13px;color:var(--paper70)}
+  .rv .tick.on{opacity:1;transform:none}
+  .rv .tick .c{color:var(--signal)}
+  .rv .name{font-size:clamp(44px,11vw,84px);font-weight:800;letter-spacing:-.02em;opacity:0;transform:translateY(14px) scale(.98);transition:all .7s cubic-bezier(.2,.8,.2,1)}
+  .rv .name.on{opacity:1;transform:none}
+  .rv .tag{color:var(--paper70);font-size:17px;line-height:1.45;margin-top:14px;opacity:0;transition:opacity .6s ease .15s;max-width:44ch;margin-left:auto;margin-right:auto}
+  .rv .tag.on{opacity:1}
+  .rv .status{margin-top:16px;opacity:0;transition:opacity .5s ease .2s}
+  .rv .status.on{opacity:1}
+  .pill{display:inline-flex;align-items:center;gap:.5ch;border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;font-size:12px;color:var(--paper70)}
+  .pdot{width:7px;height:7px;border-radius:999px;background:var(--signal);box-shadow:0 0 0 0 rgba(198,255,72,.5);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(198,255,72,.45)}70%{box-shadow:0 0 0 10px rgba(198,255,72,0)}100%{box-shadow:0 0 0 0 rgba(198,255,72,0)}}
+  .enter{margin-top:26px;opacity:0;transition:opacity .5s ease}
+  .enter.on{opacity:1}
+  .enter button{background:var(--signal);color:var(--ink);border:0;border-radius:999px;padding:.7rem 1.3rem;font-weight:700;font-size:15px}
+  .skipbtn{position:fixed;right:18px;bottom:16px;z-index:70;background:transparent;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:.35rem .8rem;font-size:12px}
+
+  /* ── ACT 2 — deck ── */
+  #stage{position:relative;height:100%;display:flex;flex-direction:column}
+  .topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
+  .brand{display:flex;align-items:center;gap:.55ch;font-weight:700;font-size:15px}
+  .bm{width:24px;height:24px;border-radius:7px;background:var(--signal);color:var(--ink);display:grid;place-items:center;font-weight:800}
+  .deckwrap{flex:1;display:grid;place-items:center;position:relative;min-height:0}
+  #deck{position:relative;width:min(440px,90vw);height:min(600px,72vh)}
+  .card{position:absolute;inset:0;border-radius:22px;background:linear-gradient(180deg,#15181c,#0e1013);border:1px solid var(--line);
+    padding:26px;display:flex;flex-direction:column;will-change:transform,opacity;box-shadow:0 30px 80px -30px rgba(0,0,0,.8);transform-origin:center bottom;touch-action:pan-y}
+  .card.grab{cursor:grab}
+  .card.grabbing{cursor:grabbing}
+  .card h2{font-size:clamp(26px,6vw,34px);line-height:1.08;letter-spacing:-.02em;font-weight:800}
+  .card .kick{color:var(--signal)}
+  .card .body{color:var(--paper70);font-size:16px;line-height:1.5;margin-top:12px}
+  .card .foot{margin-top:auto}
+  .swipehint{position:absolute;left:0;right:0;bottom:-2px;text-align:center;color:var(--mute);font-size:12px;pointer-events:none}
+  .badge{position:absolute;top:22px;right:22px;font-weight:800;font-size:13px;letter-spacing:.12em;padding:.3rem .6rem;border-radius:8px;border:2px solid;opacity:0;transform:rotate(-8deg)}
+  .badge.keep{color:var(--signal);border-color:var(--signal)}
+  .badge.next{color:var(--mute);border-color:var(--mute)}
+
+  /* card internals */
+  .chiprow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .chip{border:1px solid var(--line);border-radius:8px;padding:.25rem .55rem;font-size:12px;color:var(--paper70)}
+  .fn{border-left:2px solid var(--signal);padding-left:12px;margin-top:14px}
+  .fn b{font-size:16px}
+  .fn .m{color:var(--mute);font-size:13px;margin-top:2px}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .tags span{font-size:11px;color:var(--mute);border:1px solid var(--line);border-radius:6px;padding:.12rem .45rem}
+  .stages{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:14px}
+  .st{font-size:12px;color:var(--mute);border:1px dashed var(--line);border-radius:999px;padding:.25rem .6rem}
+  .st.now{color:var(--ink);background:var(--signal);border:1px solid var(--signal);font-weight:700}
+  .bar{height:6px;border-radius:999px;background:var(--line);margin-top:16px;overflow:hidden}
+  .bar i{display:block;height:100%;width:22%;background:var(--signal)}
+  /* proof trophy */
+  .card.proof{background:radial-gradient(120% 90% at 50% 0%, rgba(198,255,72,.10), #0e1013 60%);border-color:#3c471f}
+  .card.proof .seal{width:46px;height:46px;border-radius:12px;background:var(--signal-dim);border:1px solid #3c471f;display:grid;place-items:center;color:var(--signal);font-size:22px}
+  .card.proof.alive{animation:breathe 4s ease-in-out infinite}
+  @keyframes breathe{0%,100%{box-shadow:0 30px 80px -30px rgba(0,0,0,.8),0 0 0 0 rgba(198,255,72,.06)}50%{box-shadow:0 30px 90px -30px rgba(0,0,0,.85),0 0 60px -10px rgba(198,255,72,.20)}}
+  .claim{font-size:20px;font-weight:700;line-height:1.35;margin-top:16px}
+  .scope{font-size:12px;color:var(--mute);margin-top:12px;line-height:1.5}
+  .kids{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .kid{border:1px solid var(--line);border-radius:12px;padding:.5rem .8rem;font-weight:600;text-decoration:none}
+  .kid .s{display:block;color:var(--mute);font-size:11px;font-weight:400}
+  .cta{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5ch;border-radius:999px;font-weight:700;padding:.8rem 1rem;text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--paper);font-size:15px}
+  .btn.sig{background:var(--signal);color:var(--ink);border-color:var(--signal)}
+
+  /* controls */
+  .controls{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 0 18px}
+  .nav{width:46px;height:46px;border-radius:999px;border:1px solid var(--line);background:var(--ink2);color:var(--paper);font-size:20px;display:grid;place-items:center}
+  .nav:disabled{opacity:.35}
+  .dots{display:flex;gap:7px;align-items:center}
+  .dot2{width:7px;height:7px;border-radius:999px;background:var(--line);transition:all .3s}
+  .dot2.on{background:var(--signal);width:22px}
+  .inspectbtn{position:fixed;left:20px;bottom:16px;z-index:6;background:transparent;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:.4rem .85rem;font-size:12px}
+
+  /* ── ACT 3 — inspector ── */
+  #inspector{position:fixed;inset:0;z-index:80;background:rgba(6,7,9,.7);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+  #inspector.open{display:flex}
+  .sheet{width:min(720px,100%);max-height:86vh;overflow:auto;background:var(--ink2);border:1px solid var(--line);border-radius:22px 22px 0 0;padding:22px}
+  .sheet h3{font-size:14px}
+  .kv{display:grid;grid-template-columns:170px 1fr;gap:8px 14px;font-size:13px;margin-top:14px}
+  .kv .k{color:var(--mute)}
+  .closex{float:right;background:transparent;border:1px solid var(--line);color:var(--mute);border-radius:999px;padding:.25rem .7rem;font-size:12px}
+
+  @media (max-width:420px){ .card{padding:22px;border-radius:20px} .claim{font-size:18px} }
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition-duration:.001ms!important} }
+</style>
+</head>
+<body>
+<a href="#main" class="skip">Skip to content</a>
+
+<svg id="bg" preserveAspectRatio="none" viewBox="0 0 1200 800" aria-hidden="true">
+  <path class="thread" d="M-50,180 C250,60 420,300 700,190 950,95 1050,320 1300,220"/>
+  <path class="thread b" d="M-50,520 C220,640 460,420 720,560 980,690 1080,470 1300,600"/>
+  <path class="thread" d="M-50,360 C300,300 500,440 760,360 1000,290 1120,470 1300,400" style="opacity:.07"/>
+</svg>
+<div id="glow" aria-hidden="true"></div>
+
+<!-- ACT 1 -->
+<div id="reveal" aria-label="Compiling company">
+  <div class="rv">
+    <div class="log" id="log">
+      <div class="tick" data-i="0"><span class="mono meta">Corpiler</span> · initializing compiler</div>
+      <div class="tick" data-i="1">Thread Intelligence <span class="c">✓ compiled</span></div>
+      <div class="tick" data-i="2">Booking Composer <span class="c">✓ compiled</span></div>
+      <div class="tick" data-i="3">Sealing canonical artifact…</div>
+    </div>
+    <div class="name" id="rvName">Threadline</div>
+    <div class="tag" id="rvTag">Stop re-reading the same chain — it spots the booking inside your thread and gets it confirmed before the client moves on.</div>
+    <div class="status" id="rvStatus"><span class="pill"><span class="pdot"></span> Compiled prototype · live in the Factory</span></div>
+    <div class="enter" id="rvEnter"><button id="enterBtn">Meet your company →</button></div>
+  </div>
+</div>
+<button class="skipbtn" id="skipReveal">skip intro</button>
+
+<!-- ACT 2 -->
+<main id="main" tabindex="-1">
+  <div id="stage" aria-hidden="true">
+    <div class="topbar">
+      <div class="brand"><span class="bm">C</span> Corpiler <span class="meta">Factory</span></div>
+      <span class="meta" id="counter">1 / 8</span>
+    </div>
+    <div class="deckwrap"><div id="deck"></div></div>
+    <div class="controls">
+      <button class="nav" id="prev" aria-label="Previous">‹</button>
+      <div class="dots" id="dots"></div>
+      <button class="nav" id="next" aria-label="Next">›</button>
+    </div>
+  </div>
+  <button class="inspectbtn" id="openInspector">Inspect the record</button>
+</main>
+
+<!-- ACT 3 -->
+<div id="inspector" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-label="Technical record">
+    <button class="closex" id="closeInspector">close</button>
+    <h3 class="meta">Inspector — full canonical record</h3>
+    <div class="kv">
+      <div class="k">Build</div><div class="mono">BUILD-JKWR1C</div>
+      <div class="k">Status</div><div>COMPILED · prototype · synthetic</div>
+      <div class="k">Compiled</div><div>2026-06-30 09:15 · updated 2026-07-01 15:35</div>
+      <div class="k">Functions</div><div>Thread Intelligence (specified) · Booking Composer (specified)</div>
+      <div class="k">Latest event</div><div>function.compiled · Write-auth proof · SPECIFIED</div>
+      <div class="k">Verified evidence</div><div>1 · OUTCOME · reviewed hosted restart-durability proof · 2026-07-01</div>
+      <div class="k">Distribution</div><div>1 EVIDENCE_CARD (verified claim) · draft-first, no external post</div>
+      <div class="k">Lineage</div><div>root (no parent) · children: Slotted, Slotline</div>
+      <div class="k">Provenance</div><div>Corpiler canonical evidence · no company_id / submitter identity exposed</div>
+    </div>
+    <p class="scope">Every value here is backed by a canonical record. Nothing is presented as production traction.</p>
+  </div>
+</div>
+
+<script>
+const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- ACT 1: reveal ---------- */
+const reveal=document.getElementById('reveal'), stage=document.getElementById('stage');
+function startDeck(){
+  reveal.classList.add('gone');
+  stage.setAttribute('aria-hidden','false');
+  document.getElementById('main').focus({preventScroll:true});
+}
+function runReveal(){
+  const ticks=[...document.querySelectorAll('.tick')];
+  if(RM){ ticks.forEach(t=>t.classList.add('on')); rvName.classList.add('on'); rvTag.classList.add('on'); rvStatus.classList.add('on'); rvEnter.classList.add('on'); return; }
+  let d=250;
+  ticks.forEach((t,i)=>setTimeout(()=>t.classList.add('on'), d+i*430));
+  const base=d+ticks.length*430;
+  setTimeout(()=>document.getElementById('rvName').classList.add('on'), base+120);
+  setTimeout(()=>document.getElementById('rvTag').classList.add('on'), base+520);
+  setTimeout(()=>document.getElementById('rvStatus').classList.add('on'), base+820);
+  setTimeout(()=>document.getElementById('rvEnter').classList.add('on'), base+1150);
+  setTimeout(()=>{ if(!reveal.classList.contains('gone')) startDeck(); }, base+4200); // auto-advance
+}
+document.getElementById('enterBtn').addEventListener('click',startDeck);
+document.getElementById('skipReveal').addEventListener('click',startDeck);
+const pdotEl=document.querySelector('.pdot'); if(pdotEl){pdotEl.className='pdot';}
+runReveal();
+
+/* ---------- ACT 2: card deck ---------- */
+const cards=[
+  {cls:'', html:`<div class="chiprow"><span class="chip mono">BUILD-JKWR1C</span><span class="chip">synthetic</span></div>
+    <h2>Threadline</h2>
+    <div class="body">Stop re-reading the same chain — Threadline spots the booking inside your thread and gets it confirmed before the client moves on.</div>
+    <div class="foot"><div class="meta" style="color:var(--signal)">● Compiled prototype</div>
+    <div class="body" style="margin-top:8px;font-size:14px"><span class="meta">The outcome</span> — turn every freelancer's email thread into a confirmed booking, without manual scheduling.</div></div>`},
+  {cls:'', html:`<div class="meta">A concrete moment</div>
+    <h2 style="margin-top:10px">The lead that almost went cold.</h2>
+    <div class="body">A client's thread drifts for four days. Threadline reads the chain, spots the slot everyone half-agreed to, and drafts the one-tap confirmation — before the deal slips.</div>
+    <div class="foot meta">illustration · built from the compiled mandate · not a customer quote</div>`},
+  {cls:'', html:`<div class="meta">How it works</div>
+    <h2 style="margin-top:10px;font-size:26px">Two compiled functions.</h2>
+    <div class="fn"><b>Thread Intelligence</b><div class="m">Detect scheduling intent in a thread; extract times, parties, context.</div>
+      <div class="tags"><span>intent</span><span>time extraction</span><span>summarization</span></div></div>
+    <div class="fn"><b>Booking Composer</b><div class="m">Draft an on-tone confirmation with a one-tap calendar link.</div>
+      <div class="tags"><span>email draft</span><span>calendar link</span><span>tone</span></div></div>`},
+  {cls:'', html:`<div class="meta">Where it is</div>
+    <h2 style="margin-top:10px;font-size:26px">Compiled. Not yet proven in the wild.</h2>
+    <div class="stages"><span class="st now">Compiled</span>→<span class="st">Shadow</span>→<span class="st">Canary</span>→<span class="st">Live</span></div>
+    <div class="bar"><i></i></div>
+    <div class="body" style="font-size:14px;margin-top:14px">Readiness: <b>Low</b></div>
+    <div class="foot body" style="font-size:14px"><span class="meta">Next step</span><br/>Surface one real booking from a live email thread and get it confirmed.</div>`},
+  {cls:'proof alive', html:`<div class="seal">✔</div><div class="badge keep" data-badge>KEEP</div>
+    <div class="meta" style="color:var(--signal);margin-top:14px">The one thing that's actually verified</div>
+    <div class="claim">Its verified evidence and share card survived a live infrastructure restart on managed Postgres.</div>
+    <div class="scope">Verified 2026‑07‑01 · reviewed hosted restart‑durability proof · Prototype company — reviewer‑verified, not a production guarantee.</div>
+    <div class="foot meta">This is the single canonical claim about Threadline. Everything unproven stays unproven.</div>`},
+  {cls:'', html:`<div class="meta">The family</div>
+    <h2 style="margin-top:10px;font-size:26px">Two companies were built from this one.</h2>
+    <div class="kids"><a class="kid" href="#">Slotted<span class="s">BUILD_YOURS ← Threadline</span></a>
+      <a class="kid" href="#">Slotline<span class="s">BUILD_YOURS ← Threadline</span></a></div>
+    <div class="foot meta">Root company — no parent. Lineage shows names + links, never internal ids.</div>`},
+  {cls:'', html:`<div class="meta">Get involved</div>
+    <h2 style="margin-top:10px;font-size:26px">Follow it. Or offer it a capability.</h2>
+    <div class="body">Participation is a proposal — it never grants authority. Consent is explicit.</div>
+    <div class="cta"><a class="btn sig" href="#">Follow Threadline</a><a class="btn" href="#">Offer a capability</a></div>
+    <div class="foot meta">0 following · 0 offers</div>`},
+  {cls:'', html:`<div class="meta">Your turn</div>
+    <h2 style="margin-top:10px">Give us one sentence. We'll compile you a company.</h2>
+    <div class="cta"><a class="btn sig" href="#">Build your own</a><a class="btn" href="#">Remix Threadline</a></div>
+    <div class="foot meta">Compiled by Corpiler · prototype · no external actions executed.</div>`},
+];
+
+const deck=document.getElementById('deck'); let cur=0; const els=[];
+cards.forEach((c,i)=>{ const el=document.createElement('article'); el.className='card '+c.cls; el.innerHTML=c.html;
+  if(i===cards.length-1){} el.dataset.i=i; deck.appendChild(el); els.push(el); });
+// swipe hint on first card
+const hint=document.createElement('div'); hint.className='swipehint'; hint.textContent='swipe or use ‹ ›'; els[0].appendChild(hint);
+
+const dots=document.getElementById('dots');
+cards.forEach((_,i)=>{const d=document.createElement('button');d.className='dot2'+(i===0?' on':'');d.setAttribute('aria-label','Card '+(i+1));d.addEventListener('click',()=>go(i));dots.appendChild(d);});
+const counter=document.getElementById('counter'), prevB=document.getElementById('prev'), nextB=document.getElementById('next');
+
+function layout(){
+  els.forEach((el,i)=>{
+    const o=i-cur;
+    if(o<0){ el.style.transform=`translateX(-140%) rotate(-14deg)`; el.style.opacity='0'; el.style.pointerEvents='none'; el.style.zIndex=0; }
+    else if(o===0){ el.style.transform=`translateY(0) scale(1)`; el.style.opacity='1'; el.style.pointerEvents='auto'; el.style.zIndex=30; el.classList.add('grab'); }
+    else { const k=Math.min(o,3); el.style.transform=`translateY(${k*14}px) scale(${1-k*.04})`; el.style.opacity= o<=2?'1':'0'; el.style.pointerEvents='none'; el.style.zIndex=30-k; el.classList.remove('grab'); }
+    const b=el.querySelector('[data-badge]'); if(b) b.style.opacity='0';
+  });
+  [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===cur));
+  counter.textContent=(cur+1)+' / '+cards.length;
+  prevB.disabled=cur===0; nextB.disabled=cur===cards.length-1;
+  if(hint) hint.style.opacity = cur===0?'1':'0';
+}
+function go(i){ cur=Math.max(0,Math.min(cards.length-1,i)); layout(); }
+prevB.addEventListener('click',()=>go(cur-1)); nextB.addEventListener('click',()=>go(cur+1));
+window.addEventListener('keydown',e=>{ if(reveal.classList.contains('gone')===false)return;
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){go(cur+1)} if(e.key==='ArrowLeft'||e.key==='ArrowUp'){go(cur-1)} });
+
+/* pointer drag on the top card */
+let drag=null;
+deck.addEventListener('pointerdown',e=>{
+  const el=els[cur]; if(!el||!el.contains(e.target))return;
+  drag={x:e.clientX,y:e.clientY,el}; el.setPointerCapture(e.pointerId); el.classList.add('grabbing'); el.style.transition='none';
+});
+deck.addEventListener('pointermove',e=>{
+  if(!drag)return; const dx=e.clientX-drag.x; const rot=dx/18;
+  drag.el.style.transform=`translate(${dx}px, ${Math.abs(dx)*.03}px) rotate(${rot}deg)`;
+  const b=drag.el.querySelector('[data-badge]'); if(b) b.style.opacity=Math.min(1,Math.abs(dx)/90);
+});
+function endDrag(e){
+  if(!drag)return; const el=drag.el; el.classList.remove('grabbing'); el.style.transition='';
+  const dx=(e.clientX||drag.x)-drag.x;
+  if(dx<-90 && cur<cards.length-1){ el.style.transform=`translateX(-140%) rotate(-16deg)`; el.style.opacity='0'; setTimeout(()=>go(cur+1),160); }
+  else if(dx>90 && cur>0){ go(cur-1); }
+  else if(dx>90 && cur<cards.length-1){ el.style.transform='translateY(0) scale(1)'; setTimeout(()=>go(cur+1),160); } // right also advances (keep+continue)
+  else { layout(); }
+  drag=null;
+}
+deck.addEventListener('pointerup',endDrag); deck.addEventListener('pointercancel',endDrag);
+layout();
+
+/* ACT 3 inspector */
+const insp=document.getElementById('inspector');
+document.getElementById('openInspector').addEventListener('click',()=>{insp.classList.add('open');insp.setAttribute('aria-hidden','false');});
+document.getElementById('closeInspector').addEventListener('click',()=>{insp.classList.remove('open');insp.setAttribute('aria-hidden','true');});
+insp.addEventListener('click',e=>{if(e.target===insp){insp.classList.remove('open');}});
+</script>
+</body>
+</html>
