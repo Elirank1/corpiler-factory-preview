@@ -251,11 +251,30 @@
 <script>
 const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ---------- M1 Reveal telemetry — opaque session, fire-and-forget, fail-safe ---------- */
+/* Never blocks the Reveal. No identity, no card content. Deterministic event_ids => the bridge
+   dedups across reloads (a click is an interaction, never a canonical conversion). */
+const BRIDGE="https://corpiler-live-bridge-preview.onrender.com";
+const STORY_VERSION="threadline-reveal-v1";
+const TSLUG="threadline";
+function _tsess(){ try{ const k="cf_sess"; let v=sessionStorage.getItem(k); if(!v){ v="s_"+Math.random().toString(36).slice(2)+Date.now().toString(36); sessionStorage.setItem(k,v);} return v;}catch(e){ return "s_"+Math.random().toString(36).slice(2);} }
+const SESSION=_tsess(); const _telSent=new Set();
+function tel(type, meta, dedupeKey){
+  try{
+    const key=dedupeKey||type; if(_telSent.has(key)) return; _telSent.add(key);
+    const event_id="rev_"+SESSION+"_"+STORY_VERSION+"_"+key;
+    fetch(BRIDGE+"/api/telemetry",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,
+      body:JSON.stringify({event:{event_id,type,slug:TSLUG,session_ref:SESSION,from:"reveal",occurred_at:new Date().toISOString(),meta:Object.assign({story_version:STORY_VERSION},meta||{})}})}).catch(function(){});
+  }catch(e){}
+}
+tel('reveal_started');
+
 /* ---------- ACT 1: reveal ---------- */
 const reveal=document.getElementById('reveal'), stage=document.getElementById('stage');
 let deckStarted=false;
-function startDeck(){
+function startDeck(reason){
   if(deckStarted) return; deckStarted=true;
+  tel(reason==='skip'?'intro_skipped':'intro_completed');
   reveal.classList.add('gone');
   reveal.setAttribute('aria-hidden','true');
   reveal.setAttribute('inert','');
@@ -264,6 +283,7 @@ function startDeck(){
   stage.removeAttribute('inert');
   document.getElementById('main').focus({preventScroll:true});
   animateIn(els[0]);
+  markCardViewed();
 }
 function runReveal(){
   const ticks=[...document.querySelectorAll('.tick')];
@@ -275,10 +295,10 @@ function runReveal(){
   setTimeout(()=>document.getElementById('rvTag').classList.add('on'), base+520);
   setTimeout(()=>document.getElementById('rvStatus').classList.add('on'), base+820);
   setTimeout(()=>document.getElementById('rvEnter').classList.add('on'), base+1150);
-  setTimeout(()=>{ if(!deckStarted) startDeck(); }, base+4200); // auto-advance
+  setTimeout(()=>{ if(!deckStarted) startDeck('auto'); }, base+4200); // auto-advance
 }
-document.getElementById('enterBtn').addEventListener('click',startDeck);
-document.getElementById('skipReveal').addEventListener('click',startDeck);
+document.getElementById('enterBtn').addEventListener('click',()=>startDeck('enter'));
+document.getElementById('skipReveal').addEventListener('click',()=>startDeck('skip'));
 runReveal();
 
 /* ---------- ACT 2: card deck ---------- */
@@ -431,7 +451,8 @@ function animateIn(el){
       {duration:440,delay:80+idx*70,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'});
   });
 }
-function go(i){ const prev=cur; cur=Math.max(0,Math.min(cards.length-1,i)); layout(); if(cur!==prev) animateIn(els[cur]); }
+function markCardViewed(){ if(!deckStarted) return; tel('card_viewed',{card:cur},'card'+cur); if(cur===cards.length-1) tel('reveal_completed'); }
+function go(i){ const prev=cur; cur=Math.max(0,Math.min(cards.length-1,i)); layout(); if(cur!==prev){ animateIn(els[cur]); markCardViewed(); } }
 prevB.addEventListener('click',()=>go(cur-1)); nextB.addEventListener('click',()=>go(cur+1));
 window.addEventListener('keydown',e=>{ if(!deckStarted) return;
   if(e.key==='ArrowRight'||e.key==='ArrowDown'){go(cur+1)} if(e.key==='ArrowLeft'||e.key==='ArrowUp'){go(cur-1)}
@@ -464,7 +485,7 @@ layout();
 
 /* ACT 3 inspector */
 const insp=document.getElementById('inspector');
-function openInspector(){insp.classList.add('open');insp.setAttribute('aria-hidden','false');}
+function openInspector(){insp.classList.add('open');insp.setAttribute('aria-hidden','false');tel('inspect_opened');}
 function closeInspector(){insp.classList.remove('open');insp.setAttribute('aria-hidden','true');}
 document.getElementById('openInspector').addEventListener('click',openInspector);
 document.getElementById('closeInspector').addEventListener('click',closeInspector);
@@ -485,6 +506,10 @@ if(followCta) followCta.href = FOLLOW_URL;
 if(capsuleLink) capsuleLink.href = CAPSULE_URL;
 // prevent the deck drag from swallowing taps on in-card links
 [buildCta,followCta].forEach(a=>{ if(a) a.addEventListener('pointerdown',e=>e.stopPropagation()); });
+// funnel telemetry on the real CTAs (a click is interest, never a completed build/follow)
+if(buildCta)  buildCta.addEventListener('click',()=>tel('build_from_clicked'));
+if(followCta) followCta.addEventListener('click',()=>tel('follow_clicked'));
+if(capsuleLink) capsuleLink.addEventListener('click',()=>tel('canonical_capsule_opened'));
 // "View verified proof →" opens the canonical technical record
 const vp=document.getElementById('viewProof');
 if(vp){ vp.addEventListener('pointerdown',e=>e.stopPropagation()); vp.addEventListener('click',e=>{e.preventDefault();openInspector();}); }
