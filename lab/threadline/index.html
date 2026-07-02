@@ -77,7 +77,7 @@
   .foot.meta,.card>.foot .meta{color:var(--mute)}
 
   /* hero thread visual */
-  .threadviz{height:104px;width:100%;margin-top:auto}
+  .threadviz{height:96px;width:100%;margin:2px 0}
   .threadviz path{fill:none;stroke-width:2;stroke-linecap:round}
   .threadviz .tl{stroke:var(--line)}
   .threadviz .tl2{stroke:var(--signal);stroke-dasharray:5 260;animation:weave 3.4s ease-in-out infinite}
@@ -114,6 +114,36 @@
   .detect .d{width:6px;height:6px;border-radius:999px;background:var(--signal);box-shadow:0 0 0 0 rgba(198,255,72,.5);animation:pulse 2.4s infinite}
   .kid.row{width:100%;display:flex;align-items:center;justify-content:space-between}
   .kid.row .s{margin-top:0;text-align:right}
+
+  /* v2 copy blocks: steps / audience / compare / wins / proven-vs-not / actions */
+  .steps{display:flex;flex-direction:column;gap:13px}
+  .step{display:flex;gap:12px;align-items:flex-start}
+  .step .n{flex:0 0 auto;width:26px;height:26px;border-radius:8px;background:var(--signal-dim);border:1px solid #3c471f;color:var(--signal);font-weight:800;display:grid;place-items:center;font-size:13px}
+  .step b{font-size:15px}
+  .step .m{color:var(--mute);font-size:13px;margin-top:2px;line-height:1.45}
+  .aud{display:flex;flex-direction:column;gap:10px;list-style:none}
+  .aud li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.35}
+  .aud .k{color:var(--signal);flex:0 0 auto;font-weight:700}
+  .cmp{display:flex;flex-direction:column;gap:11px}
+  .cmp .row{font-size:14px;line-height:1.5;color:var(--paper70)}
+  .cmp .tag{display:inline-block;font-weight:700;border-radius:6px;padding:.12rem .5rem;font-size:12px;margin-right:7px}
+  .cmp .tag.on{background:var(--signal);color:var(--ink)}
+  .cmp .tag.off{border:1px solid var(--line);color:var(--mute)}
+  .wins{display:flex;flex-wrap:wrap;gap:8px}
+  .wins span{border:1px solid #3c471f;background:var(--signal-dim);color:var(--signal);border-radius:999px;padding:.32rem .7rem;font-size:12px;font-weight:600}
+  .pv{border-radius:12px;padding:12px 14px;border:1px solid;font-size:14px;line-height:1.45}
+  .pv.yes{border-color:var(--signal);background:var(--signal-dim);color:var(--paper)}
+  .pv.no{border-color:var(--line);color:var(--paper70)}
+  .pvk{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+  .pv.yes .pvk{color:var(--signal)} .pv.no .pvk{color:var(--mute)}
+  .checks{font-family:ui-monospace,monospace;font-size:11px;color:var(--mute);letter-spacing:.02em;line-height:1.85}
+  .stamp{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+  .bub.ghost{opacity:.5;border-style:dashed;background:transparent}
+  .actions{display:flex;flex-direction:column;gap:10px}
+  .action{display:block;border:1px solid var(--line);border-radius:14px;padding:13px 15px;text-decoration:none;color:var(--paper);background:transparent;font:inherit;cursor:pointer;text-align:left;width:100%}
+  .action.sig{background:var(--signal);color:var(--ink);border-color:var(--signal)}
+  .action b{font-size:15px} .action .m{font-size:12.5px;margin-top:3px;opacity:.82;line-height:1.4}
+  .pflink{align-self:flex-start;background:transparent;border:0;color:var(--signal);font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:2px 0;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(198,255,72,.4)}
 
   /* proof trophy */
   .card.proof{background:linear-gradient(180deg,#171a15,#0d0f0c);border-color:#3c471f}
@@ -165,25 +195,25 @@
 <div id="glow" aria-hidden="true"></div>
 
 <!-- ACT 1 -->
-<div id="reveal" aria-label="Compiling company">
+<div id="reveal" aria-label="Introducing Threadline">
   <div class="rv">
     <div class="log" id="log">
-      <div class="tick" data-i="0"><span class="mono meta">Corpiler</span> · initializing compiler</div>
-      <div class="tick" data-i="1">Thread Intelligence <span class="c">✓ compiled</span></div>
-      <div class="tick" data-i="2">Booking Composer <span class="c">✓ compiled</span></div>
-      <div class="tick" data-i="3">Sealing canonical artifact…</div>
+      <div class="tick" data-i="0">Reading the conversation <span class="c">✓</span></div>
+      <div class="tick" data-i="1">Spotting the ready meeting <span class="c">✓</span></div>
+      <div class="tick" data-i="2">Moving it to confirmation <span class="c">✓</span></div>
+      <div class="tick" data-i="3">Sealing the company…</div>
     </div>
     <h1 class="name" id="rvName">Threadline</h1>
-    <div class="tag" id="rvTag">Stop re-reading the same chain — it spots the booking inside your thread and gets it confirmed before the client moves on.</div>
-    <div class="status" id="rvStatus"><span class="pill"><span class="pdot"></span> Compiled prototype · live in the Factory</span></div>
-    <div class="enter" id="rvEnter"><button id="enterBtn">Meet your company →</button></div>
+    <div class="tag" id="rvTag">Turn interested conversations into confirmed meetings. Threadline catches the moment a client is ready to meet — and closes the scheduling loop before the opportunity goes cold.</div>
+    <div class="status" id="rvStatus"><span class="pill"><span class="pdot"></span> Compiled prototype · not yet proven in live customer workflows</span></div>
+    <div class="enter" id="rvEnter"><button id="enterBtn">See how it works →</button></div>
   </div>
 </div>
 <button class="skipbtn" id="skipReveal">skip intro</button>
 
 <!-- ACT 2 -->
 <main id="main" tabindex="-1">
-  <div id="stage" aria-hidden="true">
+  <div id="stage" aria-hidden="true" inert>
     <div class="topbar">
       <div class="brand"><span class="bm">C</span> Corpiler <span class="meta">Factory</span></div>
       <div class="tbright"><span class="meta" id="counter">1 / 8</span><button class="tbtn" id="openInspector">Inspect</button></div>
@@ -214,6 +244,7 @@
       <div class="k">Provenance</div><div>Corpiler canonical evidence · no company_id / submitter identity exposed</div>
     </div>
     <p class="scope" style="margin-top:14px">Every value here is backed by a canonical record. Nothing is presented as production traction.</p>
+    <a class="pflink" id="capsuleLink" href="#" style="margin-top:14px;display:inline-block">Open the canonical Capsule →</a>
   </div>
 </div>
 
@@ -227,8 +258,10 @@ function startDeck(){
   if(deckStarted) return; deckStarted=true;
   reveal.classList.add('gone');
   reveal.setAttribute('aria-hidden','true');
+  reveal.setAttribute('inert','');
   document.getElementById('skipReveal').style.display='none';
   stage.setAttribute('aria-hidden','false');
+  stage.removeAttribute('inert');
   document.getElementById('main').focus({preventScroll:true});
   animateIn(els[0]);
 }
@@ -250,94 +283,114 @@ runReveal();
 
 /* ---------- ACT 2: card deck ---------- */
 const cards=[
-  {cls:'hero', html:`
-    <div class="top"><div class="chiprow"><span class="chip mono">BUILD-JKWR1C</span><span class="chip">synthetic</span></div></div>
+  // 1 — The problem
+  {cls:'', html:`
+    <div class="top meta">The problem</div>
     <div class="mid">
-      <h2>Threadline</h2>
-      <div class="body">Stop re-reading the same chain — it spots the booking inside your thread and gets it confirmed before the client moves on.</div>
+      <h2 style="font-size:27px">The opportunity rarely dies with a “no.”</h2>
+      <div class="body">It dies in the gap between “Tuesday could work” and a meeting that never actually gets confirmed.</div>
+      <div class="threadmock">
+        <div class="bub them">Tuesday afternoon could work.</div>
+        <div class="drift">— the reply you meant to send —</div>
+        <div class="bub you ghost">Great — see you then.</div>
+      </div>
+    </div>
+    <div class="foot meta">A promising conversation becomes one more thread to remember, chase and reopen.</div>`},
+
+  // 2 — The promise
+  {cls:'', html:`
+    <div class="top meta">The promise</div>
+    <div class="mid">
+      <h2 style="font-size:27px">Threadline makes sure the meeting happens.</h2>
+      <div class="body">It recognizes when a conversation is ready to become a booking, finds what's still missing, and moves it toward confirmation.</div>
       <svg class="threadviz" viewBox="0 0 380 104" aria-hidden="true">
         <path class="tl" d="M8,72 C90,72 90,24 170,24 250,24 250,76 330,76"/>
         <path class="tl2" d="M8,72 C90,72 90,24 170,24 250,24 250,76 330,76"/>
         <circle class="node" cx="8" cy="72" r="4"/><circle class="node" cx="330" cy="76" r="5"/>
-        <text x="0" y="98" fill="#8b908b" font-size="10" font-family="ui-monospace,monospace" letter-spacing="1">MESSY THREAD</text>
+        <text x="0" y="98" fill="#8b908b" font-size="10" font-family="ui-monospace,monospace" letter-spacing="1">STALLED THREAD</text>
         <text x="272" y="98" fill="#c6ff48" font-size="10" font-family="ui-monospace,monospace" letter-spacing="1">CONFIRMED</text>
       </svg>
+      <div class="wins"><span>Less chasing</span><span>Fewer dropped deals</span><span>More confirmed meetings</span></div>
     </div>
-    <div class="foot"><div class="meta" style="color:var(--signal)">● Compiled prototype</div>
-    <div class="body" style="margin-top:8px;font-size:14px"><span class="meta">The outcome</span> — turn every freelancer's email thread into a confirmed booking, without manual scheduling.</div></div>`},
+    <div class="foot meta">The meeting is already in the conversation.</div>`},
 
+  // 3 — A concrete moment (the money shot)
   {cls:'', html:`
     <div class="top meta">A concrete moment</div>
     <div class="mid">
-      <h2 style="font-size:27px">The lead that almost went cold.</h2>
+      <h2 style="font-size:26px">The client is ready. Nobody closes the loop.</h2>
       <div class="threadmock">
-        <div class="bub them">Could we grab 30 min next week?</div>
-        <div class="bub you">Tue or Wed both work for me.</div>
-        <div class="drift">— thread goes quiet · 4 days —</div>
-        <div class="detect"><span class="d"></span>Threadline · detected slot: Wed 15:00</div>
-        <div class="bub conf">Confirmed for Wed 15:00 — invite attached ✓</div>
+        <div class="stamp">Client · Monday</div>
+        <div class="bub them">Thursday afternoon might work. Can you send me something?</div>
+        <div class="drift">— 4 days later · no reply, no invite —</div>
+        <div class="detect"><span class="d"></span>Threadline detects: intent · a day · missing time</div>
+        <div class="stamp" style="align-self:flex-end;text-align:right">Drafted by Threadline</div>
+        <div class="bub conf">Thursday works — how about 3:00 PM? I'll send the invite once you confirm.</div>
       </div>
     </div>
-    <div class="foot meta">Illustration · built from the compiled mandate · not a customer quote</div>`},
+    <div class="foot meta">Illustration · specified prototype behavior · not a customer quote</div>`},
 
+  // 4 — How it works
   {cls:'', html:`
     <div class="top meta">How it works</div>
     <div class="mid">
-      <h2 style="font-size:26px">Two compiled functions.</h2>
-      <div class="fn"><b>Thread Intelligence</b><div class="m">Detect scheduling intent in a thread; extract times, parties, context.</div>
-        <div class="tags"><span>intent</span><span>time extraction</span><span>summarization</span></div></div>
-      <div class="fn"><b>Booking Composer</b><div class="m">Draft an on-tone confirmation with a one-tap calendar link.</div>
-        <div class="tags"><span>email draft</span><span>calendar link</span><span>tone</span></div></div>
+      <h2 style="font-size:26px">From conversation to confirmation.</h2>
+      <div class="steps">
+        <div class="step"><span class="n">1</span><div><b>Understands the thread</b><div class="m">Who's involved, what was agreed, and whether it's ready to move.</div></div></div>
+        <div class="step"><span class="n">2</span><div><b>Resolves the next step</b><div class="m">Finds the missing detail — a time, a participant, a location or an approval.</div></div></div>
+        <div class="step"><span class="n">3</span><div><b>Moves it to confirmation</b><div class="m">Prepares the reply, the booking and the follow-up needed to get it confirmed.</div></div></div>
+      </div>
     </div>
-    <div class="foot meta">Specified at compile time · not yet exercised on live mail</div>`},
+    <div class="foot meta">You stay in control — Threadline prepares, you confirm.</div>`},
 
+  // 5 — Why it's different
   {cls:'', html:`
-    <div class="top meta">Where it is</div>
+    <div class="top meta">Why it's different</div>
     <div class="mid">
-      <h2 style="font-size:26px">Compiled. Not yet proven in the wild.</h2>
-      <div class="stages"><span class="st now">Compiled</span>→<span class="st">Shadow</span>→<span class="st">Canary</span>→<span class="st">Live</span></div>
-      <div class="bar"><i></i></div>
-      <div class="body" style="font-size:14px">Readiness: <b>Low</b> — honest by design.</div>
+      <h2 style="font-size:26px">Scheduling links wait to be opened. Threadline starts where intent already exists.</h2>
+      <div class="cmp">
+        <div class="row"><span class="tag off">Booking page</span> waits for someone to remember to click a link.</div>
+        <div class="row"><span class="tag on">Threadline</span> starts inside the conversation, where the intent already exists.</div>
+      </div>
     </div>
-    <div class="foot body" style="font-size:14px"><span class="meta">Next step</span><br/>Surface one real booking from a live email thread and get it confirmed.</div>`},
+    <div class="foot meta">Where the decision actually happens.</div>`},
 
+  // 6 — Who it's for
+  {cls:'', html:`
+    <div class="top meta">Who it's for</div>
+    <div class="mid">
+      <h2 style="font-size:26px">For client-facing teams whose next meeting starts in email.</h2>
+      <ul class="aud">
+        <li><span class="k">›</span> Consultants &amp; agencies</li>
+        <li><span class="k">›</span> Recruiters &amp; sales teams</li>
+        <li><span class="k">›</span> High-value service businesses</li>
+      </ul>
+    </div>
+    <div class="foot meta">Where a missed follow-up can mean missed revenue.</div>`},
+
+  // 7 — What's proven vs not (ceremony)
   {cls:'proof alive', html:`
     <div class="top"><div class="seal">✔</div></div>
     <div class="mid">
-      <div class="meta" style="color:var(--signal)">The one thing that's actually verified</div>
-      <div class="claim">Its verified evidence and share card survived a live infrastructure restart on managed Postgres.</div>
-      <div class="scope">Verified 2026‑07‑01 · reviewed hosted restart‑durability proof · Prototype — reviewer‑verified, not a production guarantee.</div>
+      <div class="meta" style="color:var(--signal)">Two very different questions.</div>
+      <div class="pv yes"><div class="pvk">What Corpiler has proven</div>Threadline exists as a durable, inspectable company — its record, evidence and lineage persist and stay verifiable.</div>
+      <div class="pv no"><div class="pvk">What Threadline still has to prove</div>That it can turn a real conversation into a confirmed meeting.</div>
+      <button class="pflink" id="viewProof" type="button">View verified proof →</button>
     </div>
-    <div class="foot meta">The single canonical claim about Threadline. Everything unproven stays unproven.</div>`},
+    <div class="foot meta">Next: turn one real conversation into a confirmed meeting.</div>`},
 
-  {cls:'', html:`
-    <div class="top meta">The family</div>
-    <div class="mid">
-      <h2 style="font-size:26px">Two companies were built from this one.</h2>
-      <div class="body" style="font-size:15px">Someone met Threadline, hit <b style="color:var(--paper)">Build yours</b>, and compiled their own — with Threadline recorded as the parent.</div>
-      <div class="kids">
-        <a class="kid row" href="#"><span>Slotted</span><span class="s">BUILD_YOURS ← Threadline</span></a>
-        <a class="kid row" href="#"><span>Slotline</span><span class="s">BUILD_YOURS ← Threadline</span></a>
-      </div>
-    </div>
-    <div class="foot meta">Root company — no parent. Lineage shows names + links, never internal ids.</div>`},
-
-  {cls:'act', html:`
-    <div class="top meta">Get involved</div>
-    <div class="mid">
-      <h2 style="font-size:26px">Follow it. Or offer it a capability.</h2>
-      <div class="body">Participation is a proposal — it never grants authority. Consent is explicit.</div>
-      <div class="cta"><a class="btn sig" href="#">Follow Threadline</a><a class="btn" href="#">Offer a capability</a></div>
-    </div>
-    <div class="foot meta">0 following · 0 offers</div>`},
-
+  // 8 — Your turn
   {cls:'act', html:`
     <div class="top meta">Your turn</div>
     <div class="mid">
-      <h2>Give us one sentence.<br/>We'll compile you a company.</h2>
-      <div class="cta"><a class="btn sig" href="#">Build your own</a><a class="btn" href="#">Remix Threadline</a></div>
+      <h2 style="font-size:26px">Help turn Threadline into a real company.</h2>
+      <div class="actions">
+        <a class="action sig" id="buildCta" href="#"><b>Build from Threadline →</b><div class="m">Create your own version for a market or workflow you know.</div></a>
+        <a class="action" id="followCta" href="#"><b>Follow the experiment</b><div class="m">See whether it succeeds in real conversations.</div></a>
+        <button class="action" id="inspectFromCta" type="button"><b>Inspect the company</b><div class="m">Open its evidence, lineage and compiled record.</div></button>
+      </div>
     </div>
-    <div class="foot meta">Compiled by Corpiler · prototype · no external actions executed.</div>`},
+    <div class="foot meta">The next proof is a real conversation.</div>`},
 ];
 
 const deck=document.getElementById('deck'); let cur=0; const els=[];
@@ -368,7 +421,7 @@ function layout(){
 function animItems(el){
   const mid=el.querySelector('.mid'); if(!mid) return [];
   const out=[]; [...mid.children].forEach(ch=>{
-    if(ch.matches('.threadmock,.cta,.kids,.stages')) out.push(...ch.children); else out.push(ch);
+    if(ch.matches('.threadmock,.cta,.kids,.stages,.steps,.aud,.cmp,.wins,.actions')) out.push(...ch.children); else out.push(ch);
   }); return out;
 }
 function animateIn(el){
@@ -411,9 +464,30 @@ layout();
 
 /* ACT 3 inspector */
 const insp=document.getElementById('inspector');
-document.getElementById('openInspector').addEventListener('click',()=>{insp.classList.add('open');insp.setAttribute('aria-hidden','false');});
-document.getElementById('closeInspector').addEventListener('click',()=>{insp.classList.remove('open');insp.setAttribute('aria-hidden','true');});
-insp.addEventListener('click',e=>{if(e.target===insp){insp.classList.remove('open');insp.setAttribute('aria-hidden','true');}});
+function openInspector(){insp.classList.add('open');insp.setAttribute('aria-hidden','false');}
+function closeInspector(){insp.classList.remove('open');insp.setAttribute('aria-hidden','true');}
+document.getElementById('openInspector').addEventListener('click',openInspector);
+document.getElementById('closeInspector').addEventListener('click',closeInspector);
+insp.addEventListener('click',e=>{if(e.target===insp) closeInspector();});
+const icta=document.getElementById('inspectFromCta');
+if(icta){ icta.addEventListener('pointerdown',e=>e.stopPropagation()); icta.addEventListener('click',e=>{e.preventDefault();openInspector();}); }
+
+/* ---------- real CTA wiring (public routes; no internal ids) ---------- */
+// Resolve the site base from the hosted path so links work under the Pages base path
+// and degrade harmlessly when opened locally.
+const SITE = location.pathname.replace(/\/lab\/threadline\/?(index\.html)?$/,'');
+const CAPSULE_URL = SITE + "/company/?slug=threadline";
+const BUILD_URL   = SITE + "/live-compile/?from=threadline&fromName=Threadline&edge=BUILD_YOURS&src=public";
+const FOLLOW_URL  = CAPSULE_URL + "#participate"; // deep-links to the canonical Follow flow on the Capsule
+const buildCta=document.getElementById('buildCta'), followCta=document.getElementById('followCta'), capsuleLink=document.getElementById('capsuleLink');
+if(buildCta)  buildCta.href  = BUILD_URL;
+if(followCta) followCta.href = FOLLOW_URL;
+if(capsuleLink) capsuleLink.href = CAPSULE_URL;
+// prevent the deck drag from swallowing taps on in-card links
+[buildCta,followCta].forEach(a=>{ if(a) a.addEventListener('pointerdown',e=>e.stopPropagation()); });
+// "View verified proof →" opens the canonical technical record
+const vp=document.getElementById('viewProof');
+if(vp){ vp.addEventListener('pointerdown',e=>e.stopPropagation()); vp.addEventListener('click',e=>{e.preventDefault();openInspector();}); }
 </script>
 </body>
 </html>
